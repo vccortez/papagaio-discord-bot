@@ -79,7 +79,7 @@ function setupClient() {
 
       mentionRegex = new RegExp(`[@]?${client.user.username}`, 'i')
 
-      client.user.setActivity('every word you type', { type: 'WATCHING' })
+      client.user.setActivity('everyone', { type: 'WATCHING' })
         .then((presence) => console.log(`${tag} :: set presence to`, presence.game ? presence.game.name : 'none'))
         .catch(console.error)
 
@@ -102,15 +102,18 @@ function setupClient() {
             const m = await msg.channel.send('ping?')
             m.edit(`pong! bot latency : ${m.createdTimestamp - msg.createdTimestamp}ms. API latency : ${Math.round(client.ping)}ms`)
             break
+          case "words":
+            await send(msg, `I have learned ${keys} words so far`)
+            break
           case "reply-chance":
             if (arg.length === 0) {
               await send(msg, `right now I reply to ${answerRate}% of the messages`)
-              return
+              break
             }
 
             if (msg.author.id !== BOT_OWNERID) {
               await send(msg, 'you do not have the permission to set this')
-              return
+              break
             }
 
             const rate = parseInt(arg[0], 10)
@@ -173,14 +176,8 @@ function clean(str) {
 function saveModel() {
   const db = m.getDB()
   const dbkeys = Object.keys(db).length
-
-  if (dbkeys !== keys && client.user) {
-    keys = dbkeys
-
-    client.user.setActivity(`every word: ${keys} words`, { type: 'WATCHING' })
-      .then((presence) => console.log(`${tag} :: update activity`, keys))
-      .catch(console.error)
-  }
+  
+  keys = dbkeys
 
   fs.writeFile('model.json', JSON.stringify(db, null, 2), 'utf8', (err) => {
     if (err) console.error(err.message)
