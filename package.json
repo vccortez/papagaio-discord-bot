@@ -4,7 +4,7 @@
   "description": "a chat bot using markov chains",
   "main": "index.js",
   "scripts": {
-    "start": "node ."
+    "start": "nf start"
   },
   "author": "Vitor Cortez <vitor.a.cortez@gmail.com>",
   "license": "MIT",
@@ -13,6 +13,7 @@
     "discord.js": "^11.3.2",
     "emoji-regex": "^6.5.1",
     "emoji-unicode-map": "^1.1.9",
+    "foreman": "^3.0.1",
     "markov": "git+https://git@github.com/vekat/node-markov.git",
     "slug": "^0.9.1",
     "stream-concat": "^0.3.0",
