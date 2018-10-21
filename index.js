@@ -38,7 +38,7 @@ const initialSeed = 'the-office-us.txt'
 const dataFile = 'data.txt'
 
 const file = new Tail(dataFile)
-tag = '[papagaio]'
+const tag = '[papagaio]'
 
 
 file.watch()
@@ -87,7 +87,7 @@ function setupClient() {
     .on('disconnect', () => { console.warn('Disconnected!') })
     .on('reconnecting', () => { console.warn('Reconnecting...') })
     .on('message', async (msg) => {
-      if (msg.system || msg.author.bot) {
+      if (msg.system || msg.author.bot || !msg.guild) {
         return
       }
 
