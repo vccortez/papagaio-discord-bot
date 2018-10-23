@@ -5,6 +5,10 @@ exports.run = async (client, message, args) => {
     return await message.channel.send(`my average sentence length is \`${cLength}\``)
   }
 
+  if (message.author.id !== client.config.owner) {
+    return await message.channel.send('you cannot tell me what to do !')
+  }
+  
   const length = parseInt(args[0], 10)
 
   if (!length || length < 8 || length > 20) {
