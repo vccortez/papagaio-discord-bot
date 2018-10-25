@@ -35,16 +35,24 @@ module.exports = function (client) {
   client.chatter.chat = async (content, message) => {
     const answer = client.chatter.markov.respond(content, message.settings.sentence).join(' ')
 
-    await message.channel.startTyping()
+    client.chatter.type(answer, message)
+  }
+  client.chatter.type = async (text, message) => {
+    const typingDuration = Math.min(text.length * 50, 5000)
 
-    client.setTimeout(async () => {
-      await message.channel.stopTyping(true)
-      try {
-        await message.channel.send(answer)
-      } catch (err) {
-        client.logger.err(err.message)
-      }
-    }, 2000)
+    message.channel.startTyping()
+
+    return new Promise((resolve, reject) => {
+      client.setTimeout(() => {
+        message.channel.stopTyping(true)
+        try {
+          resolve(message.channel.send(text))
+        } catch (err) {
+          client.logger.err(err.message, err.stack)
+          reject(err)
+        }
+      }, typingDuration)
+    })
   }
 
   tailed.on('line', (data) => {
