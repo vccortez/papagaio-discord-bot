@@ -2,9 +2,9 @@ exports.run = async (client, message, args) => {
   if (!args || args.length < 1) return
 
   if (message.author.id !== client.config.owner) {
-    return await message.channel.send('you cannot tell me what to do !')
+    return client.chatter.type('you cannot tell me what to do !', message)
   }
-  
+
   const cmdName = args[0]
 
   if (!client.commands.has(cmdName)) return
@@ -14,5 +14,5 @@ exports.run = async (client, message, args) => {
 
   const cmdData = require(`./${cmdName}.js`)
   client.commands.set(cmdName, cmdData)
-  await message.channel.send(`the ${cmdName} command has been reloaded`)
+  return client.chatter.type(`the \`${cmdName}\` command has been reloaded`, message)
 }
