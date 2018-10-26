@@ -1,5 +1,7 @@
 exports.run = async (client, message, args) => {
-  if (!args || args.length < 1) return
+  if (!args || args.length < 1) {
+    return client.chatter.type(`my current prefix is \`${message.settings.prefix}\``, message)
+  }
 
   if (message.author.id !== client.config.owner) {
     return client.chatter.type('you cannot tell me what to do !', message)

@@ -8,6 +8,7 @@ module.exports = async (client, message) => {
   const combinedSettings = {}
   const defaults = client.config.defaultSettings
   const guilds = client.settings.get(message.guild.id)
+
   Object.keys(defaults).forEach((key) => {
     combinedSettings[key] = guilds[key] || defaults[key]
   })
@@ -16,23 +17,16 @@ module.exports = async (client, message) => {
 
   if (!message.content.startsWith(settings.prefix)) {
     const prefixMention = new RegExp(`^<@!?${client.user.id}>( |)$`)
-    const mention = new RegExp(`<@!?${client.user.id}>`)
+    const regularMention = new RegExp(`<@!?${client.user.id}>`, 'g')
 
     if (message.content.match(prefixMention)) {
-      await message.channel.send(`my current prefix is \`${settings.prefix}\``)
-    } else if (message.content.match(mention)) {
-      const content = client.chatter.format(message.content.split(mention).join(''))
-      await client.chatter.chat(content, message)
-      client.chatter.save(content)
+      message.content = `${settings.prefix} prefix`
+    } else if (message.content.match(regularMention)) {
+      message.content.replace(regularMention, 'papagaio')
+      message.content = `${settings.prefix} speak ${message.content}`
     } else {
-      const content = client.chatter.format(message.content)
-      client.chatter.save(content)
-      if (Math.floor(Math.random() * (100 - 1)) + 1 < settings.rate) {
-        await client.chatter.chat(content, message)
-      }
+      message.content = `${settings.prefix} listen ${message.content}`
     }
-
-    return
   }
 
   const args = message.content.slice(settings.prefix.length).trim().split(/\s+/g)
@@ -40,7 +34,11 @@ module.exports = async (client, message) => {
 
   const command = client.commands.get(cmdName)
 
-  if (!command) return
+  if (!command) {
+    client.logger.err(`attempted to invoke [${cmdName}] command`)
+    return
+  }
 
+  client.logger.log(`invoking [${cmdName}] command`)
   await command.run(client, message, args)
 }
