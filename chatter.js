@@ -35,7 +35,28 @@ module.exports = function (client) {
   client.chatter.chat = async (content, message) => {
     const answer = client.chatter.markov.respond(content, message.settings.sentence).join(' ')
 
-    client.chatter.type(answer, message)
+    const filtered = answer
+      .replace(/@(everyone|here)/g, '@\u200b$1')
+      .replace(/<@!?[0-9]+>/g, (input) => {
+        const id = input.replace(/<|!|>|@/g, '')
+
+        const member = message.channel.guild.members.get(id)
+        if (member) {
+          if (member.nickname) return `@\u200b${member.nickname}`
+          return `@\u200b${member.user.username}`
+        } else {
+          const user = message.client.users.get(id)
+          if (user) return `@\u200b${user.username}`
+          return input
+        }
+      })
+      .replace(/<@&[0-9]+>/g, (input) => {
+        const role = message.guild.roles.get(input.replace(/<|@|>|&/g, ''))
+        if (role) return `@\u200b${role.name}`
+        return input
+      })
+
+    client.chatter.type(filtered, message)
   }
   client.chatter.type = async (text, message) => {
     const typingDuration = Math.min(text.length * 50, 5000)
