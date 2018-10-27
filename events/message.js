@@ -35,7 +35,7 @@ module.exports = async (client, message) => {
   const command = client.commands.get(cmdName) || client.commands.get(client.aliases.get(cmdName))
 
   if (!command) {
-    client.logger.err(`attempted to invoke [${command.meta.name}] command`)
+    client.logger.err(`${cmdName} does not exist`)
     return
   }
 
