@@ -5,15 +5,10 @@ module.exports = async (client, message) => {
     client.settings.set(message.guild.id, {})
   }
 
-  const combinedSettings = {}
   const defaults = client.config.defaultSettings
   const guilds = client.settings.get(message.guild.id)
 
-  Object.keys(defaults).forEach((key) => {
-    combinedSettings[key] = guilds[key] || defaults[key]
-  })
-
-  const settings = message.settings = combinedSettings
+  const settings = message.settings = { ...defaults, ...guilds }
 
   if (!message.content.startsWith(settings.prefix)) {
     const mentions = new RegExp(`<@!?${client.user.id}>`, 'g')
@@ -37,13 +32,29 @@ module.exports = async (client, message) => {
   const args = message.content.slice(settings.prefix.length).trim().split(/\s+/g)
   const cmdName = args.shift().toLowerCase()
 
-  const command = client.commands.get(cmdName)
+  const command = client.commands.get(cmdName) || client.commands.get(client.aliases.get(cmdName))
 
   if (!command) {
-    client.logger.err(`attempted to invoke [${cmdName}] command`)
+    client.logger.err(`attempted to invoke [${command.meta.name}] command`)
     return
   }
 
-  client.logger.log(`invoking [${cmdName}] command`)
-  await command.run(client, message, args)
+  let authorLevel = 0
+
+  if (message.author.id === message.guild.ownerID) {
+    authorLevel = 3
+  } else {
+    let roles = message.guild.roles.filter((r) => settings.admin.includes(r))
+    if (roles.size > 0 && roles.some((r) => message.member.roles.has(r.id))) {
+      authorLevel = 2
+    } else {
+      roles = message.guild.roles.filter((r) => settings.mod.includes(r))
+      if (roles.size > 0 && roles.some((r) => message.member.roles.has(r.id))) {
+        authorLevel = 1
+      }
+    }
+  }
+
+  client.logger.log(`run [ ${command.meta.name} | ${args.length} args | level ${authorLevel} ]`)
+  return command.run(client, message, args, authorLevel)
 }

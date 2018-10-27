@@ -1,5 +1,11 @@
 {
   "prefix": "🐦",
   "rate": 5,
-  "sentence": 8
+  "sentence": 8,
+  "admin": [
+    "Admin"
+  ],
+  "mod": [
+    "Moderator"
+  ]
 }

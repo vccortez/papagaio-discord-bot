@@ -30,7 +30,20 @@ const cmdFiles = fs.readdirSync(path.resolve(__dirname, 'commands/'))
 for (let file of cmdFiles) {
   if (!file.endsWith('.js')) continue
   let cmdData = require(`./commands/${file}`)
-  let cmdName = file.split('.')[0]
+  cmdData.meta = {
+    hidden: true,
+    name: file.split('.')[0],
+    category: 'hidden',
+    description: 'none',
+    usage: '',
+    aliases: [],
+    level: 0,
+    ...cmdData.meta
+  }
+  let cmdName = cmdData.meta.name
+  cmdData.meta.aliases.forEach((alias) => {
+    client.aliases.set(alias, cmdName)
+  })
   client.logger.log(`loading command : ${cmdName}`)
   client.commands.set(cmdName, cmdData)
 }
