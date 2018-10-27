@@ -43,7 +43,6 @@ process.once('SIGINT', () => {
   client.logger.log('killing', 'sigint')
   client.destroy()
   if (client.chatter) {
-    client.chatter.tailed.unwatch()
-    client.chatter.wstream.close()
+    client.chatter.dataStream.close()
   }
 })

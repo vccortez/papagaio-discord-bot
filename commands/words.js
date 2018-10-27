@@ -1,5 +1,5 @@
 exports.run = async (client, message) => {
-  const words = Object.keys(client.chatter.markov.getDB()).length
+  const words = Object.keys(client.chatter.model.getDB()).length
 
   return client.chatter.type(`I have learned \`${words}\` words`, message)
 }

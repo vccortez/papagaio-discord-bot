@@ -1,6 +1,5 @@
 const Markov = require('markov')
 const slug = require('slug')
-const { Tail } = require('tail')
 const emojiRegex = require('emoji-regex')
 const emojiMap = require('emoji-unicode-map')
 const fs = require('fs')
@@ -8,11 +7,10 @@ const fs = require('fs')
 const emojiPattern = emojiRegex()
 
 module.exports = function (client) {
-  const logs = 'data.txt'
-  const tailed = new Tail(logs)
-  const wstream = fs.createWriteStream(logs, { flags: 'a' })
+  const data = 'data.log'
+  const dataStream = fs.createWriteStream(data, { flags: 'a' })
 
-  const markov = Markov(1, (s) => {
+  const model = Markov(1, (s) => {
     // replace emoji with its name
     // replace discord emoji with its name
     // tag punctuation
@@ -22,18 +20,28 @@ module.exports = function (client) {
       })
       .replace(/<:(\S+):\S+>/g, '$1')
       .replace(/(\s|^)([\u2000-\u206F\u2E00-\u2E7F¯ツ\\'!"#$%&()*+,\-./:;<=>?@[\]^_`´{|}~]+)(?!\S)/gi, '$1«p:$2»')
-      .replace(/([\u00C0-\u00FF\w\u2000-\u206F\u2E00-\u2E7F¯ツ\\'!"#$%&()*+,\-./:;<=>?@[\]^_`´{|}~]+)(?![^«»]*»)/gi, (m, p1) => {
+      .replace(/([\u00C0-\u00FF\w\u2000-\u206F\u2E00-\u2E7F¯ツ\\'!"#$%&()*+,\-./:;<=>?@[\]^_`´{|}~]+)(?![^«»]*»)/gi, (_, p1) => {
         const s = slug(p1, '_')
         return `«w:${s}»`
       })
   }, (s) => s.split(/\s+/))
 
-  client.chatter = { markov, wstream, tailed }
+  client.chatter = { model, dataStream }
 
-  client.chatter.format = (content) => content.replace(/\s+/g, ' ').trim()
-  client.chatter.save = (content) => content.split(/\s+/).length > 2 && client.chatter.wstream.write(`${content}\n`)
+  client.chatter.format = (message) => message.trim().replace(/\s+/g, ' ')
+
+  client.chatter.save = (message, done) => {
+    if (message.split(/\s+/).length > 2) {
+      client.logger.log('appending new data')
+      client.chatter.model.seed(message)
+      dataStream.write(message + '\n', done)
+    } else {
+      (done instanceof Function) && done(true, null)
+    }
+  }
+
   client.chatter.chat = async (content, message) => {
-    const answer = client.chatter.markov.respond(content, message.settings.sentence).join(' ')
+    const answer = client.chatter.model.respond(content, message.settings.sentence).join(' ')
 
     const filtered = answer
       .replace(/@(everyone|here)/g, '@\u200b$1')
@@ -58,6 +66,7 @@ module.exports = function (client) {
 
     client.chatter.type(filtered, message)
   }
+
   client.chatter.type = async (text, message) => {
     const typingDuration = Math.min(text.length * 50, 5000)
 
@@ -76,13 +85,7 @@ module.exports = function (client) {
     })
   }
 
-  tailed.on('line', (data) => {
-    client.logger.log('feeding new line')
-    client.chatter.markov.seed(data)
-  })
-  tailed.watch()
-
-  client.chatter.markov.seed(fs.createReadStream(logs), () => {
-    client.logger.log('read initial chatter file')
+  client.chatter.model.seed(fs.createReadStream(data), () => {
+    client.logger.log('initial seeding completed')
   })
 }

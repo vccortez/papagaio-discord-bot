@@ -16,17 +16,22 @@ module.exports = async (client, message) => {
   const settings = message.settings = combinedSettings
 
   if (!message.content.startsWith(settings.prefix)) {
-    const prefixMention = new RegExp(`^<@!?${client.user.id}>( |)$`)
-    const regularMention = new RegExp(`<@!?${client.user.id}>`, 'g')
+    const mentions = new RegExp(`<@!?${client.user.id}>`, 'g')
 
-    if (message.content.match(prefixMention)) {
-      message.content = `${settings.prefix} prefix`
-    } else if (message.content.match(regularMention)) {
-      message.content.replace(regularMention, 'papagaio')
-      message.content = `${settings.prefix} speak ${message.content}`
+    let content = message.content
+
+    if (mentions.test(content)) {
+      content = content.replace(mentions, (_, offset) => offset === 0 ? '' : 'papagaio')
+      if (!/[^\s]/.test(content)) {
+        content = `${settings.prefix} prefix`
+      } else {
+        content = `${settings.prefix} speak ${content}`
+      }
     } else {
-      message.content = `${settings.prefix} listen ${message.content}`
+      content = `${settings.prefix} listen ${content}`
     }
+
+    message.content = content
   }
 
   const args = message.content.slice(settings.prefix.length).trim().split(/\s+/g)
