@@ -15,6 +15,7 @@ exports.run = async (client, message, args, level) => {
 }
 
 exports.meta = {
+  hidden: false,
   name: 'prefix',
   category: 'guild',
   description: 'shows bot prefix',

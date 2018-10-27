@@ -5,6 +5,7 @@ exports.run = async (client, message) => {
 }
 
 exports.meta = {
+  hidden: false,
   name: 'words',
   category: 'chatter',
   description: 'shows amount of words learned',

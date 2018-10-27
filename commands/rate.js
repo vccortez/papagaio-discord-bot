@@ -22,6 +22,7 @@ exports.run = async (client, message, args, level) => {
 }
 
 exports.meta = {
+  hidden: false,
   name: 'rate',
   category: 'chatter',
   description: 'shows bot answer rate',

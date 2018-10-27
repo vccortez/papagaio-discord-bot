@@ -23,6 +23,7 @@ exports.run = async (client, message, args, level) => {
 }
 
 exports.meta = {
+  hidden: false,
   name: 'sentence',
   category: 'chatter',
   description: 'shows bot answer length',

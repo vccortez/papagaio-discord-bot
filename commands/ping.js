@@ -4,6 +4,7 @@ exports.run = async (client, message) => {
 }
 
 exports.meta = {
+  hidden: false,
   name: 'ping',
   category: 'miscelaneous',
   description: "shows bot and API's latency",

@@ -18,6 +18,7 @@ exports.run = async (client, message, args, level) => {
 }
 
 exports.meta = {
+  hidden: false,
   name: 'reload',
   category: 'guild',
   description: 'reloads given command',
