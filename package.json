@@ -13,11 +13,10 @@
     "discord.js": "^11.3.2",
     "emoji-regex": "^6.5.1",
     "emoji-unicode-map": "^1.1.9",
-    "enmap": "^4.3.2",
+    "enmap": "^4.3.3",
     "foreman": "^3.0.1",
     "markov": "git+https://git@github.com/vekat/node-markov.git",
-    "slug": "^0.9.1",
-    "tail": "^1.2.3"
+    "slug": "^0.9.2"
   },
   "repository": {
     "type": "git",
@@ -26,5 +25,8 @@
   "bugs": {
     "url": "https://github.com/vekat/papagaio-discord-bot/issues"
   },
-  "homepage": "https://github.com/vekat/papagaio-discord-bot#readme"
+  "homepage": "https://github.com/vekat/papagaio-discord-bot#readme",
+  "devDependencies": {
+    "standard": "^12.0.1"
+  }
 }
