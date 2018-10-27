@@ -1,7 +1,7 @@
-exports.run = async (client, message, args) => {
+exports.run = async (client, message, args, level) => {
   if (!args || args.length < 1) return
 
-  if (message.author.id !== client.config.owner) {
+  if (level < 2) {
     return client.chatter.type('you cannot tell me what to do !', message)
   }
 
@@ -15,4 +15,13 @@ exports.run = async (client, message, args) => {
   const cmdData = require(`./${cmdName}.js`)
   client.commands.set(cmdName, cmdData)
   return client.chatter.type(`the \`${cmdName}\` command has been reloaded`, message)
+}
+
+exports.meta = {
+  name: 'reload',
+  category: 'guild',
+  description: 'reloads given command',
+  usage: '[command]',
+  aliases: [],
+  level: 2
 }

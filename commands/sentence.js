@@ -1,11 +1,11 @@
-exports.run = async (client, message, args) => {
+exports.run = async (client, message, args, level) => {
   const cLength = message.settings.sentence
 
   if (!args || args.length < 1) {
     return client.chatter.type(`my average sentence length is \`${cLength}\``, message)
   }
 
-  if (message.author.id !== client.config.owner) {
+  if (level < 1) {
     return client.chatter.type('you cannot tell me what to do !', message)
   }
 
@@ -20,4 +20,13 @@ exports.run = async (client, message, args) => {
   client.logger.bot(`updated value : ${length}`, 'sentence')
 
   return message.channel.send(`updated sentence length to \`${length}\``, message)
+}
+
+exports.meta = {
+  name: 'sentence',
+  category: 'chatter',
+  description: 'shows bot answer length',
+  usage: '[number]',
+  aliases: ['s'],
+  level: 1
 }

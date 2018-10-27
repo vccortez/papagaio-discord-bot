@@ -1,11 +1,11 @@
-exports.run = async (client, message, args) => {
+exports.run = async (client, message, args, level) => {
   const cRate = message.settings.rate
 
   if (!args || args.length < 1) {
     return client.chatter.type(`there is a \`${cRate}%\` chance I reply to a message`, message)
   }
 
-  if (message.author.id !== client.config.owner) {
+  if (level < 1) {
     return client.chatter.type('you cannot tell me what to do !', message)
   }
 
@@ -19,4 +19,13 @@ exports.run = async (client, message, args) => {
   client.settings.set(message.guild.id, rate, 'rate')
   client.logger.bot(`updated value : ${rate}`, 'rate')
   return client.chatter.type(`updated reply chance to \`${rate}%\``, message)
+}
+
+exports.meta = {
+  name: 'rate',
+  category: 'chatter',
+  description: 'shows bot answer rate',
+  usage: '[number]',
+  aliases: ['r'],
+  level: 1
 }
