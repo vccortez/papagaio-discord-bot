@@ -64,7 +64,7 @@ module.exports = function (client) {
         return input
       })
 
-    client.chatter.type(filtered, message)
+    return client.chatter.type(filtered, message).catch((err) => client.logger.err(err.message))
   }
 
   client.chatter.type = async (text, message) => {
