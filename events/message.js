@@ -44,11 +44,11 @@ module.exports = async (client, message) => {
   if (message.author.id === message.guild.ownerID) {
     authorLevel = 3
   } else {
-    let roles = message.guild.roles.filter((r) => settings.admin.includes(r))
+    let roles = message.guild.roles.filter((r) => settings.admin.includes(r.name))
     if (roles.size > 0 && roles.some((r) => message.member.roles.has(r.id))) {
       authorLevel = 2
     } else {
-      roles = message.guild.roles.filter((r) => settings.mod.includes(r))
+      roles = message.guild.roles.filter((r) => settings.mod.includes(r.name))
       if (roles.size > 0 && roles.some((r) => message.member.roles.has(r.id))) {
         authorLevel = 1
       }
