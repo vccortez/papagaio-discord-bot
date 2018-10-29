@@ -1,3 +1,5 @@
+const { randomInt } = require('../util')
+
 exports.run = async (client, message, args) => {
   const content = client.chatter.format(args.join(' '))
 
@@ -7,10 +9,4 @@ exports.run = async (client, message, args) => {
       return client.chatter.chat(content, message)
     }
   })
-}
-
-function randomInt (min, max) {
-  min = Math.ceil(min)
-  max = Math.floor(max)
-  return Math.floor(Math.random() * (max - min + 1)) + min
 }
