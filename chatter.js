@@ -4,6 +4,8 @@ const emojiRegex = require('emoji-regex')
 const emojiMap = require('emoji-unicode-map')
 const fs = require('fs')
 
+const { randomInt } = require('./util')
+
 const emojiPattern = emojiRegex()
 
 module.exports = function (client) {
@@ -41,9 +43,14 @@ module.exports = function (client) {
   }
 
   client.chatter.chat = async (content, message) => {
-    const answer = client.chatter.model.respond(content, message.settings.sentence).join(' ')
+    const response = client.chatter.model.respond(content, message.settings.sentence)
 
-    const filtered = answer
+    if (response.length === 0) {
+      let squawks = randomInt(1, 6)
+      return client.chatter.type(`*${new Array(squawks).fill('squawk').join(' ')}*`, message).catch((err) => client.logger.err(err.message))
+    }
+
+    const filtered = response.join(' ')
       .replace(/@(everyone|here)/g, '@\u200b$1')
       .replace(/<@!?[0-9]+>/g, (input) => {
         const id = input.replace(/<|!|>|@/g, '')
