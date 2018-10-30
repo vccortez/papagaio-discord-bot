@@ -48,9 +48,11 @@ for (let file of cmdFiles) {
   client.commands.set(cmdName, cmdData)
 }
 
-require('./chatter')(client)
+require('./chatter')(client, (err) => {
+  if (err) return client.logger.err(err.message || err)
 
-client.login(client.config.token)
+  client.login(client.config.token)
+})
 
 process.once('SIGINT', () => {
   client.logger.log('killing', 'sigint')

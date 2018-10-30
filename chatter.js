@@ -8,7 +8,7 @@ const { randomInt } = require('./util')
 
 const emojiPattern = emojiRegex()
 
-module.exports = function (client) {
+module.exports = function (client, done) {
   const data = 'data.log'
   const dataStream = fs.createWriteStream(data, { flags: 'a' })
 
@@ -92,7 +92,5 @@ module.exports = function (client) {
     })
   }
 
-  client.chatter.model.seed(fs.createReadStream(data), () => {
-    client.logger.log('initial seeding completed')
-  })
+  client.chatter.model.seed(fs.createReadStream(data), done)
 }
