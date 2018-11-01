@@ -6,7 +6,8 @@ const fs = require('fs')
 const client = new Discord.Client()
 
 const { BOT_TOKEN: token, BOT_OWNERID: owner } = process.env
-const defaultSettings = require('./settings.json')
+const defaultSettings = require('./default-settings.json')
+const defaultCmdMeta = require('./default-command.json')
 
 client.logger = require('./logger')
 client.config = { token, owner, defaultSettings }
@@ -31,13 +32,8 @@ for (let file of cmdFiles) {
   if (!file.endsWith('.js')) continue
   let cmdData = require(`./commands/${file}`)
   cmdData.meta = {
-    hidden: true,
+    ...defaultCmdMeta,
     name: file.split('.')[0],
-    category: 'hidden',
-    description: 'none',
-    usage: '',
-    aliases: [],
-    level: 0,
     ...cmdData.meta
   }
   let cmdName = cmdData.meta.name
